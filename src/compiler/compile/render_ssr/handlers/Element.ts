@@ -30,7 +30,12 @@ export default function(node: Element, renderer: Renderer, options: RenderOption
 		renderer.push();
 	}
 
-	renderer.add_string(`<${node.name}`);
+	if (node.dynamic_tag) {
+		renderer.add_string('<');
+		renderer.add_expression(node.dynamic_tag.node);
+	} else {
+		renderer.add_string(`<${node.name}`);
+	}
 
 	const class_expression_list = node.classes.map(class_directive => {
 		const { expression, name } = class_directive;
@@ -146,13 +151,25 @@ export default function(node: Element, renderer: Renderer, options: RenderOption
 		}
 
 		if (!is_void(node.name)) {
-			renderer.add_string(`</${node.name}>`);
+			if (node.dynamic_tag) {
+				renderer.add_string('</');
+				renderer.add_expression(node.dynamic_tag.node);
+				renderer.add_string('>');
+			} else {
+				renderer.add_string(`</${node.name}>`);
+			}
 		}
 	} else if (slot && nearest_inline_component) {
 		renderer.render(children, options);
 
 		if (!is_void(node.name)) {
-			renderer.add_string(`</${node.name}>`);
+			if (node.dynamic_tag) {
+				renderer.add_string('</');
+				renderer.add_expression(node.dynamic_tag.node);
+				renderer.add_string('>');
+			} else {
+				renderer.add_string(`</${node.name}>`);
+			}
 		}
 
 		const lets = node.lets;
@@ -170,7 +187,13 @@ export default function(node: Element, renderer: Renderer, options: RenderOption
 		renderer.render(children, options);
 
 		if (!is_void(node.name)) {
-			renderer.add_string(`</${node.name}>`);
+			if (node.dynamic_tag) {
+				renderer.add_string('</');
+				renderer.add_expression(node.dynamic_tag.node);
+				renderer.add_string('>');
+			} else {
+				renderer.add_string(`</${node.name}>`);
+			}
 		}
 	}
 }
