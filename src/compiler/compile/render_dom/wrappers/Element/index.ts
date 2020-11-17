@@ -385,7 +385,8 @@ export default class ElementWrapper extends Wrapper {
 			return x`@element_is("${name}", ${is.render_chunks(block).reduce((lhs, rhs) => x`${lhs} + ${rhs}`)})`;
 		}
 
-		return x`@element("${name}")`;
+		const reference = this.node.dynamic_tag ? this.renderer.reference(this.node.dynamic_tag.node) : `"${name}"`;
+		return x`@element(${reference})`;
 	}
 
 	get_claim_statement(nodes: Identifier) {
@@ -399,7 +400,8 @@ export default class ElementWrapper extends Wrapper {
 
 		const svg = this.node.namespace === namespaces.svg ? 1 : null;
 
-		return x`@claim_element(${nodes}, "${name}", { ${attributes} }, ${svg})`;
+		const reference = this.node.dynamic_tag ? this.renderer.reference(this.node.dynamic_tag.node) : `"${name}"`;
+		return x`@claim_element(${nodes}, ${reference}, { ${attributes} }, ${svg})`;
 	}
 
 	add_directives_in_order (block: Block) {
